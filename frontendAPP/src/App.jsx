@@ -1,34 +1,36 @@
-import { useState } from 'react'
-import reactLogo from './assets/react.svg'
-import viteLogo from '/vite.svg'
-import './App.css'
+import { Routes, Route } from 'react-router-dom';
+import './App.css';
+import PageNotFound from "./customPages/404Page";
+import ServerError from "./customPages/500Page";
+import HomePage from './pages/HomePage';
+import Login from './pages/Login';
+import Client from './pages/Client';
+import Product from './pages/Product';
+import PrivateRoute from './utils/PrivateRoute';
+import RoleRoute from './utils/RoleRoute';
+import Order from './pages/Order'
 
 function App() {
-  const [count, setCount] = useState(0)
-
   return (
-    <>
-      <div>
-        <a href="https://vite.dev" target="_blank">
-          <img src={viteLogo} className="logo" alt="Vite logo" />
-        </a>
-        <a href="https://react.dev" target="_blank">
-          <img src={reactLogo} className="logo react" alt="React logo" />
-        </a>
-      </div>
-      <h1>Vite + React</h1>
-      <div className="card">
-        <button onClick={() => setCount((count) => count + 1)}>
-          count is {count}
-        </button>
-        <p>
-          Edit <code>src/App.jsx</code> and save to test HMR
-        </p>
-      </div>
-      <p className="read-the-docs">
-        Click on the Vite and React logos to learn more
-      </p>
-    </>
+    <Routes>
+
+      {/*Login page*/}
+      <Route path="/login"  element={<Login />} />
+
+      {/* Main page is protected*/}
+      <Route path="/" element={
+        <PrivateRoute>
+                  <HomePage />
+        </PrivateRoute>
+        } />
+
+      {/* Catch-all 404 route */}
+      <Route path="/500" element={<ServerError />} />
+      <Route path="*" element={<PageNotFound />} />
+      <Route path="/clients" element={<RoleRoute allowedRoles={['ADMINISTRADOR']}><Client /></RoleRoute>} />
+      <Route path="/products" element={<RoleRoute allowedRoles={['ADMINISTRADOR', 'OPERACIONES', 'VENTAS']}> <Product /></RoleRoute>} />
+      <Route path="/orders" element={<RoleRoute allowedRoles={['ADMINISTRADOR']}> <Order /></RoleRoute>} />  
+    </Routes>
   )
 }
 
