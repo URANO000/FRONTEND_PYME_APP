@@ -2,15 +2,12 @@
 
 
 :root {
-  font-family: system-ui, Avenir, Helvetica, Arial, sans-serif;
+  font-family: 'Trebuchet MS', 'Lucida Sans Unicode', 'Lucida Grande', 'Lucida Sans', Arial, sans-serif;
   line-height: 1.5;
   font-weight: 400;
 
   /* Seafoam Color Palette */
-  --navy-primary: #161D6F;
   --background-color-dark: #111827;
-  --royal-blue: #0B2F9F;
-  --mint-accent: #70e7df;
   --pale-mint: #C7FFD8;
   --text-dark: #0D1333;
   --text-light: #F8FAFB;
@@ -25,12 +22,6 @@
   -moz-osx-font-smoothing: grayscale;
 }
 
-a {
-  font-weight: 500;
-  color: var(--mint-accent);
-  text-decoration: inherit;
-  transition: color 0.2s ease;
-}
 
 a:hover {
   color: var(--pale-mint);
@@ -38,8 +29,6 @@ a:hover {
 
 body {
   margin: 0;
-  display: flex;
-  place-items: center;
   min-width: 320px;
   min-height: 100vh;
 }
