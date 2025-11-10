@@ -3,7 +3,9 @@ import api from '../services/axios';
 import Table from '../components/Table';
 import Pagination from '../components/Pagination';
 import ConfirmDialog from "../components/ConfirmDialog";
-// import { useForm } from 'react-hook-form';
+import EditModal from '../components/EditModal';
+import SuccessDialog from '../components/SucessDialog';
+
 
 const Client = () => {
     //These are the params that I ask for on my endpoint
@@ -19,10 +21,14 @@ const Client = () => {
 
     //This is mostly for my confirm dialog
     const [showConfirm, setShowConfirm] = useState(false);
+    const [showSuccess, setShowSuccess] = useState(false);
     const [selectedClientId, setSelectedClientId] = useState(null);
 
     //Just for the rest
     const [error, setError] = useState('');
+
+    //This is strictly for 
+    const [editingClient, setEditingClient] = useState(null);
 
 
     //fetch clients with filters! Using AXIOS does about the same thing AJAX would
@@ -79,6 +85,7 @@ const Client = () => {
         try {
 
             await api.delete(`Client/DeleteClient/${selectedProductId}`);
+            setShowConfirm(true);
             fetchClients();
 
         } catch (error) {
@@ -88,7 +95,27 @@ const Client = () => {
             setShowConfirm(false);
             setSelectedProductId(null);
         }
-    }
+    };
+
+    //Nice edit logic, finally, maybe it'll work with ONE
+    const handleEditClick = (id) => {
+        const client = clients.find((c) => c.clientId === id);
+        setEditingClient(client);
+    };
+
+    const handleSaveEdit = async (updatedClient) => {
+        try {
+            await api.put(`Client/UpdateClient/${updatedClient.clientId}`, updatedClient);
+            setShowSuccess(true);
+            fetchClients();
+
+        } catch (error) {
+            console.log('Error editando cliente :(((');
+        } finally {
+            setEditingClient(null); //clean it
+        }
+
+    };
 
     //Defining items for table
     const headers = ['ID', 'Cédula', 'Primer Nombre', 'Apellido', 'Email', 'Teléfono', 'Dirección'];
@@ -107,8 +134,13 @@ const Client = () => {
     //I realized I cannot comment inside a return xd
 
     return (
-        <div>
+        <div className="m-10">
             <h2 className="text-2xl font-bold text-gray-900 mb-5 dark:text-gray-50">Clientes</h2>
+
+            {/*Simple create button*/}
+            <button className="mb-5 py-2 px-4 dark:bg-indigo-500 hover:bg-indigo-600 rounded-xl text-l">
+                Crear nuevo
+            </button>
 
             {/* Filters and inputs */}
             <div>
@@ -154,6 +186,7 @@ const Client = () => {
                         data={data}
                         emptyMessage="No se encontraron clientes"
                         onDelete={handleDeleteClick}
+                        onEdit={handleEditClick}
                     />
                 )}
 
@@ -178,6 +211,23 @@ const Client = () => {
                 onConfirm={confirmDelete}
                 onCancel={() => setShowConfirm(false)}
             />
+            <EditModal
+                isOpen={!!editingClient}
+                entity={editingClient}
+                exclude={["clientId"]}
+                onClose={() => setEditingClient(null)}
+                onSave={handleSaveEdit}
+            />
+
+            <SuccessDialog
+                isOpen={showSuccess}
+                onClose={() => {
+                    console.log('Success dialog closing'); // Debug
+                    setShowSuccess(false);
+                    fetchClients(); // Refresh the list
+                }}
+            />
+
         </div>
 
     );

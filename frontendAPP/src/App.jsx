@@ -1,4 +1,4 @@
-import { Routes, Route } from 'react-router-dom';
+import { Routes, Route, Outlet } from 'react-router-dom';
 import './App.css';
 import PageNotFound from "./customPages/404Page";
 import ServerError from "./customPages/500Page";
@@ -9,27 +9,34 @@ import Product from './pages/Product';
 import PrivateRoute from './utils/PrivateRoute';
 import RoleRoute from './utils/RoleRoute';
 import Order from './pages/Order'
+import Topbar from './components/Topbar';
+import { getUserRole } from './utils/auth';
 
 function App() {
   return (
     <Routes>
 
       {/*Login page*/}
-      <Route path="/login"  element={<Login />} />
+      <Route path="/login" element={<Login />} />
 
       {/* Main page is protected*/}
-      <Route path="/" element={
-        <PrivateRoute>
-                  <HomePage />
-        </PrivateRoute>
+      <Route element={<><Topbar /> <Outlet /> </>}>
+
+
+
+        <Route path="/" element={
+          <PrivateRoute>
+            <HomePage />
+          </PrivateRoute>
         } />
 
-      {/* Catch-all 404 route */}
-      <Route path="/500" element={<ServerError />} />
-      <Route path="*" element={<PageNotFound />} />
-      <Route path="/clients" element={<RoleRoute allowedRoles={['ADMINISTRADOR']}><Client /></RoleRoute>} />
-      <Route path="/products" element={<RoleRoute allowedRoles={['ADMINISTRADOR', 'OPERACIONES', 'VENTAS']}> <Product /></RoleRoute>} />
-      <Route path="/orders" element={<RoleRoute allowedRoles={['ADMINISTRADOR']}> <Order /></RoleRoute>} />  
+        {/* Catch-all 404 route */}
+        <Route path="/500" element={<ServerError />} />
+        <Route path="*" element={<PageNotFound />} />
+        <Route path="/clients" element={<RoleRoute allowedRoles={['ADMINISTRADOR']}><Client /></RoleRoute>} />
+        <Route path="/products" element={<RoleRoute allowedRoles={['ADMINISTRADOR', 'OPERACIONES', 'VENTAS']}> <Product /></RoleRoute>} />
+        <Route path="/orders" element={<RoleRoute allowedRoles={['ADMINISTRADOR','VENTAS','OPERACIONES']}> <Order /></RoleRoute>} />
+      </Route>
     </Routes>
   )
 }

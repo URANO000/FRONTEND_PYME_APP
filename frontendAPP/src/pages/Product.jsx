@@ -3,6 +3,9 @@ import api from '../services/axios';
 import Table from '../components/Table';
 import Pagination from '../components/Pagination';
 import ConfirmDialog from '../components/ConfirmDialog';
+import { getUserRole } from '../utils/auth';
+import SucessDialog from '../components/SucessDialog';
+import EditProductModal from '../personalizedComponents/EditProductModal';
 
 
 //First thing I need to do is start my function
@@ -25,12 +28,26 @@ const Product = () => {
     //This for my dropdown stuff
     const [categories, setCategories] = useState([]);
 
+    //Get user role to make sure who can edit, delete and create
+    const userRole = getUserRole();
+
+    //Permissions for who can see and do certain thigns, this was on my project paper
+    const canCreate = userRole === "ADMINISTRADOR";
+    const canEdit = userRole === "ADMINISTRADOR" || userRole === "VENTAS" || "OPERACIONES";   //But operaciones can only change stock
+    const canDelete = userRole == "ADMINISTRADOR";
+
     //This is mostly for my confirm dialog
     const [showConfirm, setShowConfirm] = useState(false);
+    const [showSuccess, setShowSuccess] = useState(false);
     const [selectedProductId, setSelectedProductId] = useState(null);
 
     //Just for the rest
     const [error, setError] = useState('');
+
+    //For my edit button, I need this
+    const [editingProduct, setEditingProduct] = useState(null);
+
+
 
 
     //Now I call my API using axios
@@ -111,8 +128,9 @@ const Product = () => {
     const confirmDelete = async () => {
         setError('');
         try {
-
             await api.delete(`Product/DeleteProduct/${selectedProductId}`);
+            //if succesful, show success message
+            setShowSuccess(true);
 
         } catch (error) {
             console.log("Error eliminando producto", error);
@@ -121,12 +139,42 @@ const Product = () => {
             setShowConfirm(false);
             setSelectedProductId(null);
         }
+    };
+
+    //EDIT LOGIC GOES HEREB
+    const handleEditClick = (id) => {
+        const product = products.find((p) => p.productId === id);  //If my given id, from the product I choose exists
+        setEditingProduct(product);
     }
+
+    const handleSaveEdit = async (productId, formData) => {
+        console.log('handleSaveEdit called with productId:', productId); // Debug
+        console.log('formData:', formData); // Debug
+
+        try {
+            await api.put(`Product/UpdateProduct/${productId}`, formData, {
+                headers: {
+                    'Content-Type': 'multipart/form-data'
+                }
+            });
+            console.log('Product updated successfully'); // Debug
+            setShowSuccess(true);
+
+        } catch (error) {
+            console.log('Error editando el producto', error);
+            setError('No se pudo editar el producto...');
+
+        } finally {
+            setEditingProduct(null);
+        }
+    };
+
+
 
 
     //Defining items for table
 
-    const headers = ['ID', 'Nombre', 'Categoría', 'Precio', 'IVA', 'Stock', 'Imágen', 'Estado']
+    const headers = ['ID', 'Nombre', 'Categoría', 'Precio', 'IVA', 'Stock', 'Imágen', 'Estado'];
 
     const data = products.map(p => [
         p.productId,
@@ -135,21 +183,29 @@ const Product = () => {
         `₡${p.price.toFixed(2)}`,
         `${p.taxPercentage}%`,
         p.stock,
-        p.image,
+        p.image ? `http://localhost:5254${p.image}` : null,
         p.state ? 'Activo' : 'Inactivo'
     ]);
 
     //Okay, make the filters work..
 
     return (
-        <div>
+        <div className="m-10">
             <h2 className="text-2xl font-bold text-gray-900 mb-5 dark:text-gray-50">Productos</h2>
+            {
+                canCreate && (
+                    <button
+                        className="mb-5 py-2 px-4 dark:bg-indigo-500 hover:bg-indigo-600 rounded-xl text-l">
+                        Crear nuevo producto
+                    </button>
+                )
+            }
 
             {/* Filters */}
 
-            <div>
+            <div className='flex justify-between mb-5'>
                 <input
-                    className=""
+                    className="bg-gray-100 text-indigo-900 placeholder:text-gray-900 p-2 rounded-xl w-150 mr-5 dark:bg-gray-800 dark:placeholder:text-indigo-200"
                     type="text"
                     placeholder='Search...'
                     value={search}
@@ -159,7 +215,7 @@ const Product = () => {
                     }}
                 />
 
-                <select className="block py-2.5 px-0 w-full text-sm text-gray-500 bg-transparent border-0 border-b-2 border-gray-200 appearance-none dark:text-gray-400 dark:border-gray-700 focus:outline-none focus:ring-0 focus:border-gray-200 peer"
+                <select className="block py-2.5 px-2 w-100 rounded-xl text-sm text-indigo-900 bg-transparent border-0 border-b-2 border-gray-200 appearance-none dark:text-indigo-200 dark:border-gray-700 focus:outline-none focus:ring-0 focus:border-gray-200 dark:bg-gray-800 peer"
                     value={categoryId}
                     onChange={(e) => {
                         setCategoryId(e.target.value);
@@ -175,8 +231,9 @@ const Product = () => {
                 </select>
 
                 <input
+                    className="bg-gray-100 text-indigo-900 placeholder:text-gray-900 p-2 rounded-xl w-80 mr-5 ml-5 dark:bg-gray-800 dark:placeholder:text-indigo-200"
                     type="number"
-                    placeholder='MinPrice'
+                    placeholder='Precio min'
                     value={minPrice}
                     onChange={(e) => {
                         setMinPrice(e.target.value);
@@ -185,8 +242,9 @@ const Product = () => {
 
                 />
                 <input
+                    className="bg-gray-100 text-indigo-900 placeholder:text-gray-900 p-2 rounded-xl w-80 mr-5 ml-5 dark:bg-gray-800 dark:placeholder:text-indigo-200"
                     type="number"
-                    placeholder='MaxPrice'
+                    placeholder='Precio max'
                     value={maxPrice}
                     onChange={(e) => {
                         setMaxPrice(e.target.value);
@@ -204,8 +262,10 @@ const Product = () => {
                     <Table
                         headers={headers}
                         data={data}
+                        imageColumns={[6]}
                         emptyMessage="No se encontraron productos"
-                        onDelete={handleDeleteClick}
+                        onDelete={canDelete ? handleDeleteClick : undefined}
+                        onEdit={canEdit ? handleEditClick : undefined}
                     />
                 )}
 
@@ -229,6 +289,23 @@ const Product = () => {
                 message="¿Seguro que deseas eliminar este producto?"
                 onConfirm={confirmDelete}
                 onCancel={() => setShowConfirm(false)}
+            />
+
+            <SucessDialog
+                isOpen={showSuccess}
+                onClose={() => {
+                    console.log('Success dialog closing'); // Debug
+                    setShowSuccess(false);
+                    fetchProducts(); // Refresh the list
+                }}
+            />
+
+            <EditProductModal
+                isOpen={!!editingProduct}
+                product={editingProduct}
+                onClose={() => setEditingProduct(null)}
+                onSave={handleSaveEdit}
+                categories={categories}
             />
         </div>
     );
