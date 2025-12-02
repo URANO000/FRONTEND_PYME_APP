@@ -7,6 +7,7 @@ import { getUserRole } from "../utils/auth";
 import CreateOrderModal from "../personalizedComponents/CreateOrder";
 import SuccessDialog from "../components/SucessDialog";
 import OrderDetailsModal from "../personalizedComponents/OrderDetailModal";
+import ExportExcel from "../utils/ExportExcel";
 
 //Start with the functions
 const Order = () => {
@@ -123,7 +124,7 @@ const Order = () => {
     //Handle detail click
 
     const handleDetailClick = async (id) => {
-        const order = orders.find((o) => o.orderId === id );
+        const order = orders.find((o) => o.orderId === id);
         setDetailsOrder(order);
     }
 
@@ -168,6 +169,14 @@ const Order = () => {
                     </button>
                 )
             }
+
+            <ExportExcel
+                data={data}
+                headers={headers}
+                workbookName="Ordenes"
+                fileName="OrdenesExport.xlsx"
+
+            />
 
             {loading ? (
                 <p>Loading...</p>
@@ -215,11 +224,11 @@ const Order = () => {
             />
 
             <OrderDetailsModal
-            isOpen={!!detailsOrder}
-            order={detailsOrder}
-            onClose={() => setDetailsOrder(null)}
-            api={api}
-            
+                isOpen={!!detailsOrder}
+                order={detailsOrder}
+                onClose={() => setDetailsOrder(null)}
+                api={api}
+
             />
         </div>
 

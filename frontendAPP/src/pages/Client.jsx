@@ -6,6 +6,7 @@ import ConfirmDialog from "../components/ConfirmDialog";
 import EditClientModal from "../personalizedComponents/EditClientModal";
 import SuccessDialog from '../components/SucessDialog';
 import CreateClientModal from "../personalizedComponents/CreateClient";
+import ExportExcel from "../utils/ExportExcel";
 
 
 const Client = () => {
@@ -137,6 +138,15 @@ const Client = () => {
                 onClick={() => { setShowCreateModal(true) }}>
                 Crear nuevo
             </button>
+            
+            <ExportExcel
+                data={data}
+                headers={headers}
+                workbookName="Clientes"
+                fileName="ClientesExport.xlsx"
+
+            />
+
 
             {/* Filters and inputs */}
             <div className='flex justify-between mb-5'>
