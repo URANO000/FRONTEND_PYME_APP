@@ -70,7 +70,7 @@ const LoginForm = () => {
                         /> <br />
                     </div>
 
-                    <button type="submit" className='dark:bg-indigo-500 py-2 px-4 rounded-xl text-l'>
+                    <button type="submit" className='bg-indigo-600 text-white hover:bg-indigo-300 dark:bg-indigo-500 dark:hover:bg-indigo-600 py-2 px-4 rounded-xl text-l'>
                         Ingresar</button>
                 </div>
 

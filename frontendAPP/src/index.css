@@ -8,9 +8,12 @@
 
   /* Seafoam Color Palette */
   --background-color-dark: #111827;
+  --background-color-light: #f3f3f3;
   --pale-mint: #C7FFD8;
   --text-dark: #0D1333;
   --text-light: #F8FAFB;
+  --indigo-primary: #1d0dad;
+  --indigo-hover: #6d00fc;
 
   color-scheme: light dark;
   color: var(--text-light);
@@ -22,6 +25,14 @@
   -moz-osx-font-smoothing: grayscale;
 }
 
+::-webkit-scrollbar {
+  background-color:#292a30;
+}
+
+::-webkit-scrollbar-thumb {
+  background-color: #1d0dad;
+  border-radius: 2rem;
+}
 
 a:hover {
   color: var(--pale-mint);
@@ -45,19 +56,28 @@ button {
 @media (prefers-color-scheme: light) {
   :root {
     color: var(--text-dark);
-    background-color: var(--pale-mint);
+    background-color: var(--background-color-light);
   }
   
-  h1 {
-    color: var(--navy-primary);
+  h1,h2,h3,h4 {
+    color: var(--indigo-primary);
   }
   
   a {
-    color: var(--royal-blue);
+    color: var(--indigo-primary);
   }
   
   a:hover {
-    color: var(--navy-primary);
+    color: var(--indigo-hover);
   }
+
+  ::-webkit-scrollbar {
+  background-color:#d4d6df;
+}
+
+::-webkit-scrollbar-thumb {
+  background-color: #7573ff;
+  border-radius: 2rem;
+}
 
 }

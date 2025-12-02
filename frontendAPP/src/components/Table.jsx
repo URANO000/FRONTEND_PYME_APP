@@ -10,7 +10,7 @@ function Table({ headers, data, emptyMessage = "No se encontraron resultados", o
         return imageColumns.includes(cellIndex);
     };
     
-    // Helper function to render cell content
+    //Helper function to render cell content
     const renderCellContent = (cell, cellIndex) => {
         if (isImageColumn(cellIndex)) {
             //Render image if the column is marked as an image column
@@ -61,11 +61,12 @@ function Table({ headers, data, emptyMessage = "No se encontraron resultados", o
                         data.map((row, rowIndex) => (
                             <tr
                                 key={rowIndex}
-                                className="bg-white border-b dark:bg-gray-800 dark:border-gray-700 border-gray-200"
+                                className="bg-white border-b dark:bg-gray-800 dark:border-gray-700 border-gray-200 hover:bg-gray-100 dark:hover:bg-gray-700"
                             >
                                 {
                                     hasActions && (
                                         <td className="px-6 py-4 text-center space-x-2">
+                                            {/* This is for my buttons, delete, edit, view */}
                                             {onDelete &&
                                                 <button onClick={() => onDelete(row[0])} className='text-red-600 hover:text-red-800'>
                                                     <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" strokeWidth="1.5" stroke="currentColor" className="size-5">

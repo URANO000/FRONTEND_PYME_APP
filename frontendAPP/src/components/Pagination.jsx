@@ -33,14 +33,14 @@ function Pagination({
                     <button 
                         onClick={() => onPageChange(currentPage - 1)}
                         disabled={currentPage === 1}
-                        className="flex items-center justify-center px-4 h-10 text-base font-medium text-white bg-gray-800 rounded-s hover:bg-gray-900 dark:bg-gray-800 dark:border-gray-700 dark:text-gray-400 dark:hover:bg-gray-700 dark:hover:text-white disabled:opacity-50 disabled:cursor-not-allowed disabled:hover:bg-gray-800"
+                        className="flex items-center justify-center px-4 h-10 text-base font-medium text-gray-800 bg-white rounded-s hover:bg-gray-100 dark:bg-gray-800 dark:border-gray-700 dark:text-gray-400 dark:hover:bg-gray-700 dark:hover:text-white disabled:opacity-50 disabled:cursor-not-allowed dark:disabled:hover:bg-gray-800 disabled:hover:bg-gray-300"
                     >
                         Anterior
                     </button>
                     <button 
                         onClick={() => onPageChange(currentPage + 1)}
                         disabled={currentPage >= totalPages}
-                        className="flex items-center justify-center px-4 h-10 text-base font-medium text-white bg-gray-800 border-0 border-s border-gray-700 rounded-e hover:bg-gray-900 dark:bg-gray-800 dark:border-gray-700 dark:text-gray-400 dark:hover:bg-gray-700 dark:hover:text-white disabled:opacity-50 disabled:cursor-not-allowed disabled:hover:bg-gray-800"
+                        className="flex items-center justify-center px-4 h-10 text-base font-medium text-gray-800 bg-white border-0 border-s border-gray-700 rounded-e hover:bg-gray-100 dark:bg-gray-800 dark:border-gray-700 dark:text-gray-400 dark:hover:bg-gray-700 dark:hover:text-white disabled:opacity-50 disabled:cursor-not-allowed dark:disabled:hover:bg-gray-800 disabled:hover:bg-gray-300"
                     >
                         Siguiente
                     </button>

@@ -3,8 +3,10 @@ import api from '../services/axios';
 import Table from '../components/Table';
 import Pagination from '../components/Pagination';
 import ConfirmDialog from "../components/ConfirmDialog";
-import EditModal from '../components/EditModal';
+import EditClientModal from "../personalizedComponents/EditClientModal";
 import SuccessDialog from '../components/SucessDialog';
+import CreateClientModal from "../personalizedComponents/CreateClient";
+import ExportExcel from "../utils/ExportExcel";
 
 
 const Client = () => {
@@ -27,8 +29,12 @@ const Client = () => {
     //Just for the rest
     const [error, setError] = useState('');
 
-    //This is strictly for 
+    //This is strictly for editing
     const [editingClient, setEditingClient] = useState(null);
+    const [showEditModal, setShowEditModal] = useState(false);
+
+    //This is for create
+    const [showCreateModal, setShowCreateModal] = useState(false);
 
 
     //fetch clients with filters! Using AXIOS does about the same thing AJAX would
@@ -84,8 +90,8 @@ const Client = () => {
         setError('');
         try {
 
-            await api.delete(`Client/DeleteClient/${selectedProductId}`);
-            setShowConfirm(true);
+            await api.delete(`Client/DeleteClient/${selectedClientId}`);
+            setShowSuccess(true);
             fetchClients();
 
         } catch (error) {
@@ -97,25 +103,15 @@ const Client = () => {
         }
     };
 
-    //Nice edit logic, finally, maybe it'll work with ONE
+    //Handle edit click
     const handleEditClick = (id) => {
-        const client = clients.find((c) => c.clientId === id);
-        setEditingClient(client);
-    };
-
-    const handleSaveEdit = async (updatedClient) => {
-        try {
-            await api.put(`Client/UpdateClient/${updatedClient.clientId}`, updatedClient);
-            setShowSuccess(true);
-            fetchClients();
-
-        } catch (error) {
-            console.log('Error editando cliente :(((');
-        } finally {
-            setEditingClient(null); //clean it
+        const clientToEdit = clients.find(c => c.clientId === id);
+        if (clientToEdit) {
+            setEditingClient(clientToEdit);
+            setShowEditModal(true);
         }
+    }
 
-    };
 
     //Defining items for table
     const headers = ['ID', 'Cédula', 'Primer Nombre', 'Apellido', 'Email', 'Teléfono', 'Dirección'];
@@ -138,14 +134,24 @@ const Client = () => {
             <h2 className="text-2xl font-bold text-gray-900 mb-5 dark:text-gray-50">Clientes</h2>
 
             {/*Simple create button*/}
-            <button className="mb-5 py-2 px-4 dark:bg-indigo-500 hover:bg-indigo-600 rounded-xl text-l">
+            <button className="mb-5 py-2 px-4 text-white bg-indigo-600 hover:bg-indigo-300 dark:bg-indigo-500 dark:hover:bg-indigo-600 rounded-xl text-l"
+                onClick={() => { setShowCreateModal(true) }}>
                 Crear nuevo
             </button>
+            
+            <ExportExcel
+                data={data}
+                headers={headers}
+                workbookName="Clientes"
+                fileName="ClientesExport.xlsx"
+
+            />
+
 
             {/* Filters and inputs */}
-            <div>
+            <div className='flex justify-between mb-5'>
                 <input
-                    className=""
+                    className="bg-white text-indigo-900 placeholder:text-gray-900 p-2 rounded-xl w-150 mr-5 dark:bg-gray-800 dark:placeholder:text-indigo-200 dark:text-indigo-200"
                     id="small-input"
                     type="text"
                     placeholder="Search..."
@@ -156,6 +162,7 @@ const Client = () => {
                     }}
                 />
                 <input
+                    className="bg-white text-indigo-900 placeholder:text-gray-900 p-2 rounded-xl w-100 mr-5 ml-5  dark:bg-gray-800 dark:placeholder:text-indigo-200 dark:text-indigo-200"
                     type="text"
                     placeholder="Email"
                     value={email}
@@ -165,6 +172,7 @@ const Client = () => {
                     }}
                 />
                 <input
+                    className="bg-white text-indigo-900 placeholder:text-gray-900 p-2 rounded-xl w-100 mr-5 ml-5  dark:bg-gray-800 dark:placeholder:text-indigo-200 dark:text-indigo-200"
                     type="text"
                     placeholder="Last Name"
                     value={lastName}
@@ -211,22 +219,40 @@ const Client = () => {
                 onConfirm={confirmDelete}
                 onCancel={() => setShowConfirm(false)}
             />
-            <EditModal
-                isOpen={!!editingClient}
-                entity={editingClient}
-                exclude={["clientId"]}
-                onClose={() => setEditingClient(null)}
-                onSave={handleSaveEdit}
+            <EditClientModal
+                isOpen={showEditModal}
+                client={editingClient} // Full client obj
+                onClose={() => {
+                    setShowEditModal(false);
+                    setEditingClient(null); //On close, I have to clear the editing client
+                }}
+                onSave={(updatedClient) => {
+                    console.log('Cliente editado:', updatedClient);
+                    setShowSuccess(true); //Show success dialog
+                    fetchClients(); //refresh constantly
+                }}
+                api={api}
             />
 
             <SuccessDialog
                 isOpen={showSuccess}
                 onClose={() => {
-                    console.log('Success dialog closing'); // Debug
+                    console.log('Success dialog closing'); //Debug
                     setShowSuccess(false);
                     fetchClients(); // Refresh the list
                 }}
             />
+            <CreateClientModal
+                isOpen={showCreateModal}
+                onClose={() => setShowCreateModal(false)}
+                onSave={(newClient) => {
+                    console.log('Cliente creado:', newClient);
+                    setShowSuccess(true);
+                    fetchClients();
+                }}
+                api={api}
+            />
+
 
         </div>
 
