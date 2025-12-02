@@ -5,6 +5,8 @@ import ConfirmDialog from "../components/ConfirmDialog";
 import EditOrderModal from "../personalizedComponents/EditOrderModal";
 import { getUserRole } from "../utils/auth";
 import CreateOrderModal from "../personalizedComponents/CreateOrder";
+import SuccessDialog from "../components/SucessDialog";
+import OrderDetailsModal from "../personalizedComponents/OrderDetailModal";
 
 //Start with the functions
 const Order = () => {
@@ -31,6 +33,12 @@ const Order = () => {
 
     //for create modal
     const [showCreateModal, setShowCreateModal] = useState(false);
+
+    //For success modal
+    const [showSuccess, setShowSuccess] = useState(false);
+
+    //For details
+    const [detailsOrder, setDetailsOrder] = useState(null);
 
 
     //This is so much easier without the params...aoougogogugug
@@ -91,6 +99,7 @@ const Order = () => {
     const handleSaveEdit = async (updatedOrder) => {
         try {
             await api.put(`Orders/UpdateOrder/${updatedOrder.orderId}`, updatedOrder);
+            setShowSuccess(true);
             fetchOrders();
         } catch (error) {
             console.error("Error actualizando:", error);
@@ -110,6 +119,13 @@ const Order = () => {
             throw error; //throw modal again
         }
     };
+
+    //Handle detail click
+
+    const handleDetailClick = async (id) => {
+        const order = orders.find((o) => o.orderId === id );
+        setDetailsOrder(order);
+    }
 
 
 
@@ -147,7 +163,7 @@ const Order = () => {
                 canEdit && (
                     <button
                         onClick={() => setShowCreateModal(true)}
-                        className="mb-5 py-2 px-4 dark:bg-indigo-500 hover:bg-indigo-600 rounded-xl text-l">
+                        className="mb-5 py-2 px-4 bg-indigo-600 hover:bg-indigo-300 text-white dark:bg-indigo-500 dark:hover:bg-indigo-600 rounded-xl text-l">
                         Crear nueva órden
                     </button>
                 )
@@ -163,6 +179,7 @@ const Order = () => {
                     emptyMessage="No se encontraron órdenes"
                     onDelete={canDelete ? handleDeleteClick : undefined}
                     onEdit={canEdit ? handleEditClick : undefined}
+                    onDetail={canEdit ? handleDetailClick : undefined}
                 />
             )}
 
@@ -187,6 +204,22 @@ const Order = () => {
                 onClose={() => setShowCreateModal(false)}
                 onSave={handleCreateOrder}
                 api={api} //HereI am passing thr instance I already have of api
+            />
+            <SuccessDialog
+                isOpen={showSuccess}
+                onClose={() => {
+                    console.log('Success dialog closingg'); //Debug
+                    setShowSuccess(false);
+                    fetchOrders(); //Refreshing
+                }}
+            />
+
+            <OrderDetailsModal
+            isOpen={!!detailsOrder}
+            order={detailsOrder}
+            onClose={() => setDetailsOrder(null)}
+            api={api}
+            
             />
         </div>
 

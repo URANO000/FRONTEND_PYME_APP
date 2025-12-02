@@ -1,10 +1,7 @@
 import axios from 'axios';
 
 const api = axios.create({
-    baseURL: import.meta.env.VITE_API_URL,
-    headers: {
-        'Content-Type': 'application/json'
-    }
+    baseURL: import.meta.env.VITE_API_URL
 });
 
 // Request interceptor - Add JWT token
@@ -14,10 +11,15 @@ api.interceptors.request.use(
         if (token) {
             config.headers.Authorization = `Bearer ${token}`;
         }
+        
+
+        if (!(config.data instanceof FormData)) {
+            config.headers['Content-Type'] = 'application/json';
+        }
+        
         return config;
     },
     (error) => {
-        // This handles errors that happen BEFORE the request is sent
         return Promise.reject(error);
     }
 );

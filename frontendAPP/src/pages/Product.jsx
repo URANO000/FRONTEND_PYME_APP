@@ -6,6 +6,8 @@ import ConfirmDialog from '../components/ConfirmDialog';
 import { getUserRole } from '../utils/auth';
 import SucessDialog from '../components/SucessDialog';
 import EditProductModal from '../personalizedComponents/EditProductModal';
+import CreateProductModal from '../personalizedComponents/CreateProduct';
+import ExportExcel from '../utils/ExportExcel';
 
 
 //First thing I need to do is start my function
@@ -46,6 +48,9 @@ const Product = () => {
 
     //For my edit button, I need this
     const [editingProduct, setEditingProduct] = useState(null);
+
+    //set create modal
+    const [showCreateModal, setShowCreateModal] = useState(false);
 
 
 
@@ -169,7 +174,20 @@ const Product = () => {
         }
     };
 
-
+    //Handle create -- I am getting all the errors in the world trying to add an img
+    const handleCreateProduct = async (productData) => {
+        try {
+            console.log('Sending product data...');
+            //Now it's just regular JSON - no FormData!
+            const response = await api.post('Product/CreateProduct', productData);
+            console.log('Response:', response);
+            setShowSuccess(true);
+            fetchProducts();
+        } catch (error) {
+            console.error("Error creando producto: ", error);
+            throw error;
+        }
+    };
 
 
     //Defining items for table
@@ -195,17 +213,27 @@ const Product = () => {
             {
                 canCreate && (
                     <button
-                        className="mb-5 py-2 px-4 dark:bg-indigo-500 hover:bg-indigo-600 rounded-xl text-l">
+                        onClick={() => setShowCreateModal(true)}
+                        className="mb-5 py-2 px-4 bg-indigo-600 text-white hover:bg-indigo-300 dark:bg-indigo-500 dark:hover:bg-indigo-600 rounded-xl text-l">
                         Crear nuevo producto
                     </button>
                 )
             }
+            {/*For extra points */}
+            <ExportExcel
+                data={data}
+                headers={headers}
+                workbookName="Productos"
+                fileName="ProductosExport.xlsx"
+
+            />
+
 
             {/* Filters */}
 
             <div className='flex justify-between mb-5'>
                 <input
-                    className="bg-gray-100 text-indigo-900 placeholder:text-gray-900 p-2 rounded-xl w-150 mr-5 dark:bg-gray-800 dark:placeholder:text-indigo-200"
+                    className="bg-white text-indigo-900 placeholder:text-gray-900 p-2 rounded-xl w-150 mr-5 dark:bg-gray-800 dark:placeholder:text-indigo-200 dark:text-indigo-200"
                     type="text"
                     placeholder='Search...'
                     value={search}
@@ -215,7 +243,7 @@ const Product = () => {
                     }}
                 />
 
-                <select className="block py-2.5 px-2 w-100 rounded-xl text-sm text-indigo-900 bg-transparent border-0 border-b-2 border-gray-200 appearance-none dark:text-indigo-200 dark:border-gray-700 focus:outline-none focus:ring-0 focus:border-gray-200 dark:bg-gray-800 peer"
+                <select className="block py-2.5 px-2 w-100 rounded-xl text-sm bg-white text-indigo-900 border-0 border-b-2 border-gray-200 appearance-none dark:text-indigo-200 dark:border-gray-700 focus:outline-none focus:ring-0 focus:border-gray-200 dark:bg-gray-800 peer"
                     value={categoryId}
                     onChange={(e) => {
                         setCategoryId(e.target.value);
@@ -231,7 +259,7 @@ const Product = () => {
                 </select>
 
                 <input
-                    className="bg-gray-100 text-indigo-900 placeholder:text-gray-900 p-2 rounded-xl w-80 mr-5 ml-5 dark:bg-gray-800 dark:placeholder:text-indigo-200"
+                    className="bg-white text-indigo-900 placeholder:text-gray-900 p-2 rounded-xl w-80 mr-5 ml-5 dark:bg-gray-800 dark:placeholder:text-indigo-200 dark:text-indigo-200"
                     type="number"
                     placeholder='Precio min'
                     value={minPrice}
@@ -242,7 +270,7 @@ const Product = () => {
 
                 />
                 <input
-                    className="bg-gray-100 text-indigo-900 placeholder:text-gray-900 p-2 rounded-xl w-80 mr-5 ml-5 dark:bg-gray-800 dark:placeholder:text-indigo-200"
+                    className="bg-white text-indigo-900 placeholder:text-gray-900 p-2 rounded-xl w-80 mr-5 ml-5 dark:bg-gray-800 dark:placeholder:text-indigo-200 dark:text-indigo-200"
                     type="number"
                     placeholder='Precio max'
                     value={maxPrice}
@@ -306,6 +334,15 @@ const Product = () => {
                 onClose={() => setEditingProduct(null)}
                 onSave={handleSaveEdit}
                 categories={categories}
+            />
+
+            <CreateProductModal
+                isOpen={showCreateModal}
+                onClose={() => setShowCreateModal(false)}
+                onSave={handleCreateProduct}
+                categories={categories}
+
+
             />
         </div>
     );
