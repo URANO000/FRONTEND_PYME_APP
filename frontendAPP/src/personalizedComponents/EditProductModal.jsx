@@ -123,7 +123,7 @@ const EditProductModal = ({ isOpen, product, onClose, onSave, categories = [] })
 
         setLoading(true);
         try {
-            // Create FormData for multipart/form-data
+            //Create FormData for multipart/form-data
             const submitData = new FormData();
             submitData.append('Name', formData.name);
             submitData.append('Price', formData.price);

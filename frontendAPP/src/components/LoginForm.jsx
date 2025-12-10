@@ -43,7 +43,7 @@ const LoginForm = () => {
             <h2 className='text-center text-3xl font-semibold text-indigo-500 mb-10'>Formulario de ingreso</h2>
             {error && <p style={{ color: 'red' }}>{error}</p>}
             <form onSubmit={handleSubmit} className='max-w-sm mx-auto'>
-                <div>
+                <div className='flex flex-col'>
                     <div className='mb-5'>
                         <label for='email' className="block mb-2 text-m font-medium text-indigo-950 dark:text-white">
                             Correo Electrónico</label>
@@ -71,7 +71,8 @@ const LoginForm = () => {
                     </div>
 
                     <button type="submit" className='bg-indigo-600 text-white hover:bg-indigo-300 dark:bg-indigo-500 dark:hover:bg-indigo-600 py-2 px-4 rounded-xl text-l'>
-                        Ingresar</button>
+                        Ingresar
+                    </button>
                 </div>
 
             </form>

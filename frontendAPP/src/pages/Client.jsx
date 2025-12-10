@@ -7,6 +7,7 @@ import EditClientModal from "../personalizedComponents/EditClientModal";
 import SuccessDialog from '../components/SucessDialog';
 import CreateClientModal from "../personalizedComponents/CreateClient";
 import ExportExcel from "../utils/ExportExcel";
+import ClientDetailModal from "../personalizedComponents/ClientDetailModal";
 
 
 const Client = () => {
@@ -35,6 +36,9 @@ const Client = () => {
 
     //This is for create
     const [showCreateModal, setShowCreateModal] = useState(false);
+
+    //Client detail
+    const [detailClient, setDetailClient] = useState(null);
 
 
     //fetch clients with filters! Using AXIOS does about the same thing AJAX would
@@ -111,6 +115,14 @@ const Client = () => {
             setShowEditModal(true);
         }
     }
+
+
+    const handleDetailClick = async (id) => {
+        const client = clients.find((c) => c.clientId === id);
+        setDetailClient(client);
+    }
+
+
 
 
     //Defining items for table
@@ -195,6 +207,7 @@ const Client = () => {
                         emptyMessage="No se encontraron clientes"
                         onDelete={handleDeleteClick}
                         onEdit={handleEditClick}
+                        onDetail={handleDetailClick}
                     />
                 )}
 
@@ -251,6 +264,13 @@ const Client = () => {
                     fetchClients();
                 }}
                 api={api}
+            />
+            <ClientDetailModal
+            isOpen={!!detailClient}
+            client={detailClient}
+            onClose={() => setDetailClient(null)}
+            api={api}
+
             />
 
 

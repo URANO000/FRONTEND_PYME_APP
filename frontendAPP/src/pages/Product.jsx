@@ -8,6 +8,7 @@ import SucessDialog from '../components/SucessDialog';
 import EditProductModal from '../personalizedComponents/EditProductModal';
 import CreateProductModal from '../personalizedComponents/CreateProduct';
 import ExportExcel from '../utils/ExportExcel';
+import ProductDetailModal from '../personalizedComponents/ProductDetailModal';
 
 
 //First thing I need to do is start my function
@@ -51,6 +52,9 @@ const Product = () => {
 
     //set create modal
     const [showCreateModal, setShowCreateModal] = useState(false);
+
+    //Product detail
+    const [detailsProduct, setDetailsProduct] = useState(null);
 
 
 
@@ -189,6 +193,12 @@ const Product = () => {
         }
     };
 
+    const handleDetailClick = async (id) => {
+        const product = products.find((o) => o.productId === id);
+        setDetailsProduct(product);
+    }
+
+
 
     //Defining items for table
 
@@ -294,6 +304,7 @@ const Product = () => {
                         emptyMessage="No se encontraron productos"
                         onDelete={canDelete ? handleDeleteClick : undefined}
                         onEdit={canEdit ? handleEditClick : undefined}
+                        onDetail={canEdit ? handleDetailClick : undefined}
                     />
                 )}
 
@@ -343,6 +354,13 @@ const Product = () => {
                 categories={categories}
 
 
+            />
+
+            <ProductDetailModal
+                isOpen={!!detailsProduct}
+                product={detailsProduct}
+                onClose={() => setDetailsProduct(null)}
+                api={api}
             />
         </div>
     );
