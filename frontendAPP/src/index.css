@@ -53,6 +53,15 @@ button {
   cursor: pointer;
 }
 
+.login-page{
+  background-color: #0f172a;
+  padding: 3rem;
+  width: max-content;
+  border-radius: 2rem;
+  box-shadow: #020617 0px 0px 10px 0px;
+}
+
+
 @media (prefers-color-scheme: light) {
   :root {
     color: var(--text-dark);

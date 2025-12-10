@@ -33,7 +33,7 @@ function App() {
           <Topbar toggleSidebar={toggleSidebar} />
           <div className="flex flex-1 overflow-hidden">
             <Sidebar isOpen={isSidebarOpen} />
-            <main className="flex-1 overflow-auto">
+            <main className="flex-1 overflow-auto justify-center">
               <Outlet />
             </main>
           </div>
