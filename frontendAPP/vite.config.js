@@ -8,7 +8,7 @@ export default defineConfig({
     react(),
     tailwindcss()
   ],
-  base: process.env.VITE_BASE_PATH || "/FRONTEND_PYME_APP/frontendAPP",
+  base: process.env.VITE_BASE_PATH || "/",
   build:{
     outDir: 'dist'
   }
